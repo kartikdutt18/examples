@@ -102,6 +102,11 @@ def mnist_dataset():
   progress_bar("test_labels.gz", test_labels)
   ungzip("test_labels.gz", "test_labels.ubytes")
 
+  mnist_full = requests.get(
+      "https://raw.githubusercontent.com/kartikdutt18/mlpack-test/master/mnist_full.tar.gz")
+  progress_bar("mnist_full.tar.gz", mnist_full)
+  ungzip("mnist_full.tar.gz", "mnist_full.csv")
+
   print("Converting mnist ubytes images files into csv...")
   print("This might take a while...")
   print("Converting features images...")

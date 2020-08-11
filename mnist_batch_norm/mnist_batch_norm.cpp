@@ -185,12 +185,13 @@ int main()
       tempDataset.submat(0, 1, tempDataset.n_rows - 1, tempDataset.n_cols - 1);
 
   mat testPredOut;
+  FFN<> model2;
+  mlpack::data::Load("model.bin", "model", model2);
   // Getting predictions on test data points .
-  model.Predict(testX, testPredOut);
-  // Generating labels for the test dataset.
-  Row<size_t> testPred = getLabels(testPredOut);
-  std::cout << "Saving predicted labels to \"results.csv\"" << endl;
-  testPred.save("results.csv", arma::csv_ascii);
-  std::cout << "Neural network model is saved to \"model.bin\"" << std::endl;
-  std::cout << "Finished" << endl;
+  model.Predict(validX, predOut);
+  // Calculating accuracy on validating data points.
+  predLabels = getLabels(predOut);
+  validAccuracy = arma::accu(predLabels == validY) / (double) validY.n_elem * 100;
+
+  std::cout << "Accuracy: " << " valid = " << validAccuracy << "%" << endl;
 }

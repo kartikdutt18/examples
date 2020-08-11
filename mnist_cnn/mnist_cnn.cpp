@@ -45,8 +45,8 @@ int main()
   // and training parts with following ratio.
   constexpr double RATIO = 0.1;
 
-  // Allow at max 10 iterations.
-  constexpr int MAX_ITERATIONS = 10;
+  // Allow at max 5 iterations.
+  constexpr int MAX_ITERATIONS = 5;
 
   // Step size of the optimizer.
   constexpr double STEP_SIZE = 1.2e-3;
@@ -218,25 +218,14 @@ int main()
 
   std::cout << "Predicting ..." << std::endl;
 
-  // Load test dataset
-  // The original file could be download from
-  // https://www.kaggle.com/c/digit-recognizer/data
-  data::Load("../data/test.csv", tempDataset, true);
+  FFN<> model2;
+  mlpack::data::Load("model.bin", "model", model2);
+  // Getting predictions on test data points .
+  model2.Predict(validX, predOut);
+  // Calculating accuracy on validating data points.
+  predLabels = getLabels(predOut);
+  validAccuracy =
+      arma::accu(predLabels == validY) / (double) validY.n_elem * 100;
 
-  // As before, it's necessary to get rid of column headings.
-  mat testX =
-      tempDataset.submat(0, 1, tempDataset.n_rows - 1, tempDataset.n_cols - 1);
-
-  // Matrix to store the predictions on test dataset.
-  mat testPredOut;
-  // Get predictions on test data points.
-  model.Predict(testX, testPredOut);
-  // Generate labels for the test dataset.
-  Row<size_t> testPred = getLabels(testPredOut);
-  std::cout << "Saving predicted labels to \"results.csv.\"..." << std::endl;
-
-  // Saving results into Kaggle compatibe CSV file.
-  testPred.save("results.csv", arma::csv_ascii);
-  std::cout << "Neural network model is saved to \"model.bin\"" << std::endl;
-  std::cout << "Finished" << std::endl;
+  std::cout << "Accuracy: " << " valid = " << validAccuracy << "%" << endl;
 }
